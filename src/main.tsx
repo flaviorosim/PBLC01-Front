@@ -1,9 +1,11 @@
+// src/main.tsx
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { LoginPage } from './pages/formLogin/login'
+import App from './App'; 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <LoginPage />
+    <App /> 
   </React.StrictMode>
-)
+);

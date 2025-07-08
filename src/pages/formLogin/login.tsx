@@ -1,5 +1,9 @@
 import React from "react";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
+import { useAuth } from "../../auth/AuthContext";
+import api from "../../api/axios";
 
 type LoginFormInputs = {
   email: string;
@@ -13,9 +17,26 @@ export const LoginPage: React.FC = () => {
     formState: { errors },
   } = useForm<LoginFormInputs>();
 
-  const onSubmit = (data: LoginFormInputs) => {
-    console.log("Dados enviados:", data);
-    alert(`Login efetuado com: ${data.email}`);
+  const navigate = useNavigate();
+  const { setToken } = useAuth();
+
+  const [apiError, setApiError] = useState("");
+
+  const onSubmit = async (data: LoginFormInputs) => {
+    setApiError("");
+    try {
+      const response = await api.post('/auth/login', {
+        email: data.email,
+        senha: data.password,
+      });
+
+      const { token } = response.data;
+      setToken(token);
+      navigate('/menu');
+
+    } catch (err: any) {
+      setApiError(err.response?.data?.message || 'Erro ao fazer login.');
+    }
   };
 
   return (
@@ -122,15 +143,15 @@ export const LoginPage: React.FC = () => {
             position: "absolute",
             top: "284px",
             left: "-90px",
-            color: "black",        
-            fontSize: "1rem",       
-            fontFamily: "Arial, sans-serif", 
-            fontWeight: "bold",     
+            color: "black",
+            fontSize: "1rem",
+            fontFamily: "Arial, sans-serif",
+            fontWeight: "bold",
           }}
         >
           Login
         </h2>
-        
+
         <div
           style={{
             backgroundColor: "#E0E0E0",
@@ -205,6 +226,12 @@ export const LoginPage: React.FC = () => {
               </div>
             </div>
 
+            {apiError && (
+              <p style={{ color: "red", marginBottom: "0.5rem" }}>
+                {apiError}
+              </p>
+            )}
+
             <button
               type="submit"
               style={{
@@ -215,7 +242,7 @@ export const LoginPage: React.FC = () => {
                 border: "none",
                 borderRadius: "8px",
                 cursor: "pointer",
-                marginTop: "2rem",
+                marginTop: "1rem",
               }}
             >
               ENTER
