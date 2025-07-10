@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom'; // Importado para navegação
+import { Link } from 'react-router-dom';
 import api from '../../api/axios';
+import { useAuth } from '../../auth/AuthContext'; 
 
-// Interface para os dados que vêm da API, incluindo os dados aninhados
 interface Reservation {
     id: number;
     beginDate: string;
@@ -19,10 +19,8 @@ interface Reservation {
             } | null;
         }
     };
-    // Adicione outros campos se precisar deles
 }
 
-// Interface para os dados que o formulário irá enviar para a API
 type ReservationFormData = {
     beginDate: string;
     endDate: string;
@@ -32,6 +30,8 @@ type ReservationFormData = {
 };
 
 export const ReservationPage: React.FC = () => {
+    const { user, logout } = useAuth();
+    
     const [reservations, setReservations] = useState<Reservation[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -46,7 +46,6 @@ export const ReservationPage: React.FC = () => {
         calendarId: 1,
     });
 
-    // Função para buscar os dados da API
     const fetchReservations = async () => {
         try {
             setLoading(true);
@@ -54,7 +53,7 @@ export const ReservationPage: React.FC = () => {
             setReservations(response.data);
             setError(null);
         } catch (err) {
-            setError('Falha ao carregar as reservas.');
+            setError('Error loading reservations.');
         } finally {
             setLoading(false);
         }
@@ -65,13 +64,12 @@ export const ReservationPage: React.FC = () => {
     }, []);
 
     const handleDelete = async (id: number) => {
-        if (window.confirm('Tem certeza que deseja excluir esta reserva?')) {
+        if (window.confirm('Are you sure you want to delete this reservation?')) {
             try {
                 await api.delete(`/reservations/${id}`);
-                // Para atualizar a UI, simplesmente buscamos a lista novamente
                 fetchReservations();
             } catch (err) {
-                setError('Falha ao excluir a reserva.');
+                setError('Error deleting reservation.');
             }
         }
     };
@@ -99,8 +97,8 @@ export const ReservationPage: React.FC = () => {
             beginDate: new Date(reservation.beginDate).toISOString().split('T')[0],
             endDate: new Date(reservation.endDate).toISOString().split('T')[0],
             status: reservation.status,
-            exchangeStudentId: 1, // Placeholder
-            calendarId: 1,      // Placeholder
+            exchangeStudentId: 1, 
+            calendarId: 1,      
         });
         setIsFormVisible(true);
     };
@@ -122,10 +120,9 @@ export const ReservationPage: React.FC = () => {
                 await api.post('/reservations', submissionData);
             }
             setIsFormVisible(false);
-            // Após criar ou atualizar, buscamos a lista novamente para garantir dados consistentes
             fetchReservations();
         } catch (err) {
-            setError(editingId ? 'Falha ao atualizar a reserva.' : 'Falha ao criar a reserva.');
+            setError(editingId ? 'Error updating reservation.' : 'Error creating reservation.');
         }
     };
     
@@ -134,7 +131,6 @@ export const ReservationPage: React.FC = () => {
             {/* SIDEBAR */}
             <div style={{ width: '400px', backgroundColor: '#5D8D5B', color: 'white', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    {/* O logo agora leva de volta para a página de menu */}
                     <Link to="/menu">
                         <img src="/nextExchangeLogo.png" alt="Logo" style={{ width: '200px', height: '190px', borderRadius: '12px' }} />
                     </Link>
@@ -142,7 +138,6 @@ export const ReservationPage: React.FC = () => {
                 <div style={{ padding: '0 1rem' }}>
                     <p style={{ marginTop: '1rem', marginBottom: '0.5rem', fontWeight: 'bold', fontSize: '1.1rem' }}>Menu</p>
                     <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                        {/* Itens do menu agora são links funcionais */}
                         {[
                             { label: '📅 Reservation', path: '/reservation' }, 
                             { label: '🏠 Accommodation', path: '/accommodation' }, 
@@ -163,8 +158,30 @@ export const ReservationPage: React.FC = () => {
             <div style={{ flex: 1, backgroundColor: '#f9fafb', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ backgroundColor: '#A2BFA1', padding: '1rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h1 style={{ fontSize: '2rem', color: 'white' }}>Reservation</h1>
-                    <div style={{ backgroundColor: '#dcdcdc', padding: '0.5rem 1rem', borderRadius: '20px' }}>
-                        <span role="img" aria-label="user">👤</span> Username
+                    {/* ✅ Exibe o nome do usuário logado */}
+                    <div style={{ backgroundColor: '#dcdcdc', padding: '0.5rem 1rem', borderRadius: '20px', color: '#333', display: 'flex', alignItems: 'center' }}>
+                        <span role="img" aria-label="user">👤</span>
+                        <span style={{ marginLeft: '0.5rem', marginRight: '1rem' }}>{user ? user.name : 'User'}</span>
+                        {/* ✅ Ícone de Logout */}
+                        <button 
+                            onClick={logout} 
+                            title="Logout"
+                            style={{ 
+                                background: 'none', 
+                                border: 'none', 
+                                cursor: 'pointer',
+                                padding: '0.25rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                color: '#333'
+                            }}
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
@@ -219,8 +236,8 @@ export const ReservationPage: React.FC = () => {
                                     <div>{new Date(r.endDate).toLocaleDateString()}</div>
                                     <div>{r.status}</div>
                                     <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                                        <button onClick={() => handleEditClick(r)} style={{ padding: '0.4rem 0.8rem' }}>Update</button>
-                                        <button onClick={() => handleDelete(r.id)} style={{ padding: '0.4rem 0.8rem', backgroundColor: '#e53e3e', color: 'white', border: 'none' }}>Delete</button>
+                                        <button onClick={() => handleEditClick(r)} style={{ padding: '0.4rem 0.8rem', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Update</button>
+                                        <button onClick={() => handleDelete(r.id)} style={{ padding: '0.4rem 0.8rem', backgroundColor: '#e53e3e', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Delete</button>
                                     </div>
                                 </div>
                             ))}

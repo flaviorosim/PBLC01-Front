@@ -35,7 +35,7 @@ export const LoginPage: React.FC = () => {
       navigate('/menu');
 
     } catch (err: any) {
-      setApiError(err.response?.data?.message || 'Erro ao fazer login.');
+      setApiError(err.response?.data?.message || 'Login failed. Please check your credentials.');
     }
   };
 
@@ -46,6 +46,7 @@ export const LoginPage: React.FC = () => {
         height: "100vh",
         overflow: "hidden",
         position: "relative",
+        fontFamily: "'Poppins', sans-serif", 
       }}
     >
       <div
@@ -61,7 +62,6 @@ export const LoginPage: React.FC = () => {
             backgroundColor: "#6C9A5C",
             width: "471px",
             height: "1024px",
-
           }}
         ></div>
 
@@ -74,7 +74,6 @@ export const LoginPage: React.FC = () => {
             height: "1142px",
             backgroundColor: "white",
             borderRadius: "50%",
-
           }}
         ></div>
 
@@ -98,7 +97,6 @@ export const LoginPage: React.FC = () => {
               marginBottom: "1rem"
             }}
           />
-
         </div>
       </div>
 
@@ -108,11 +106,9 @@ export const LoginPage: React.FC = () => {
           backgroundColor: "white",
           position: "relative",
           display: "flex",
-
           alignItems: "center",
         }}
       >
-
         <div
           style={{
             position: "absolute",
@@ -120,7 +116,6 @@ export const LoginPage: React.FC = () => {
             backgroundColor: "#6C9A5C",
             width: "53px",
             height: "1040px",
-
           }}
         ></div>
 
@@ -134,7 +129,6 @@ export const LoginPage: React.FC = () => {
             backgroundColor: "white",
             transform: "rotate(330deg)",
             borderRadius: "50%",
-
           }}
         ></div>
 
@@ -145,7 +139,6 @@ export const LoginPage: React.FC = () => {
             left: "-90px",
             color: "black",
             fontSize: "1rem",
-            fontFamily: "Arial, sans-serif",
             fontWeight: "bold",
           }}
         >
@@ -162,10 +155,7 @@ export const LoginPage: React.FC = () => {
             zIndex: 1,
             marginLeft: "-100px",
           }}
-
         >
-
-
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <div style={{ marginBottom: "1rem", marginTop: "1rem" }}>
               <label>Email address</label>
@@ -178,10 +168,10 @@ export const LoginPage: React.FC = () => {
                   marginTop: "0.25rem",
                   borderRadius: "4px",
                   border: errors.email ? "1px solid red" : "1px solid #ccc",
-
+                  fontFamily: "'Poppins', sans-serif", 
                 }}
                 {...register("email", {
-                  required: "email is required",
+                  required: "Email is required",
                   pattern: {
                     value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                     message: "Invalid email address",
@@ -208,12 +198,13 @@ export const LoginPage: React.FC = () => {
                   marginTop: "0.25rem",
                   borderRadius: "4px",
                   border: errors.password ? "1px solid red" : "1px solid #ccc",
+                  fontFamily: "'Poppins', sans-serif", 
                 }}
                 {...register("password", {
-                  required: "password is required",
+                  required: "Password is required",
                   minLength: {
                     value: 6,
-                    message: "password must be at least 6 characters",
+                    message: "Password must be at least 6 characters",
                   },
                 })}
               />
@@ -227,7 +218,7 @@ export const LoginPage: React.FC = () => {
             </div>
 
             {apiError && (
-              <p style={{ color: "red", marginBottom: "0.5rem" }}>
+              <p style={{ color: "red", marginBottom: "0.5rem", textAlign: 'center' }}>
                 {apiError}
               </p>
             )}
@@ -243,6 +234,9 @@ export const LoginPage: React.FC = () => {
                 borderRadius: "8px",
                 cursor: "pointer",
                 marginTop: "1rem",
+                fontFamily: "'Poppins', sans-serif", 
+                fontWeight: 'bold',
+                fontSize: '1rem'
               }}
             >
               ENTER
